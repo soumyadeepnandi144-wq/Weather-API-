@@ -3,15 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather App</title>
+    <title>SkyPulse | Real-Time Weather & Forecast</title>
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <h1>Weather App</h1>
-    <input type="text" placeholder="Enter City" id="cityInput">
-    <button id="searchBtn">Search</button>
-    <ul id="weatherInfo"></ul>
-    <p id="errorMsg"></p>
+<body class="theme-default">
+    <div class="weather-app-container">
+        <!-- App Header & Brand -->
+        <header class="app-header">
+            <div class="brand">
+                <i class="fa-solid fa-cloud-sun-rain brand-icon"></i>
+                <h1>SkyPulse Weather</h1>
+            </div>
+            <!-- Unit Toggle Button -->
+            <button id="unitToggleBtn" class="unit-toggle" title="Toggle °C / °F">
+                <span class="unit-c active">°C</span>
+                <span class="unit-divider">|</span>
+                <span class="unit-f">°F</span>
+            </button>
+        </header>
+
+        <!-- Search Bar Section -->
+        <section class="search-section">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="cityInput" placeholder="Search city or country..." autocomplete="off">
+                <button id="clearInputBtn" class="clear-btn" title="Clear input" style="display: none;">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <button id="searchBtn" class="btn btn-search" title="Search weather">
+                    Search
+                </button>
+                <button id="locationBtn" class="btn btn-location" title="Use Current GPS Location">
+                    <i class="fa-solid fa-location-crosshairs"></i>
+                </button>
+            </div>
+            <!-- Recent Searches Chip Container -->
+            <div id="recentSearches" class="recent-searches"></div>
+        </section>
+
+        <!-- Error Notification Banner -->
+        <div id="errorMsg" class="error-banner" style="display: none;"></div>
+
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="loading-state" style="display: none;">
+            <div class="spinner"></div>
+            <p>Fetching weather forecast...</p>
+        </div>
+
+        <!-- Main Weather Card Display -->
+        <main id="weatherContainer" class="weather-content" style="display: none;">
+            <!-- Current Weather Hero Card -->
+            <section class="current-weather-card">
+                <div class="card-top">
+                    <div>
+                        <h2 id="cityName" class="city-name">London, GB</h2>
+                        <p id="currentDate" class="current-date">Friday, 16 Oct 2026</p>
+                    </div>
+                    <span id="weatherBadge" class="weather-badge">Clear</span>
+                </div>
+
+                <div class="card-main">
+                    <div class="temp-display">
+                        <span id="tempValue" class="temp-value">22</span>
+                        <span id="tempUnit" class="temp-unit">°C</span>
+                    </div>
+                    <div class="weather-visual">
+                        <img id="weatherIcon" src="" alt="Weather Icon" class="weather-icon-img">
+                        <p id="weatherDesc" class="weather-desc">Scattered Clouds</p>
+                    </div>
+                </div>
+
+                <p id="feelsLike" class="feels-like">Feels like 24°C • High: 25°C • Low: 19°C</p>
+            </section>
+
+            <!-- Detailed Weather Metrics Grid -->
+            <section class="metrics-section">
+                <h3>Weather Details</h3>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <i class="fa-solid fa-droplet metric-icon"></i>
+                        <div>
+                            <span class="metric-label">Humidity</span>
+                            <h4 id="humidityVal" class="metric-val">65%</h4>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <i class="fa-solid fa-wind metric-icon"></i>
+                        <div>
+                            <span class="metric-label">Wind Speed</span>
+                            <h4 id="windVal" class="metric-val">3.2 m/s</h4>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <i class="fa-solid fa-gauge-high metric-icon"></i>
+                        <div>
+                            <span class="metric-label">Pressure</span>
+                            <h4 id="pressureVal" class="metric-val">1013 hPa</h4>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <i class="fa-solid fa-eye metric-icon"></i>
+                        <div>
+                            <span class="metric-label">Visibility</span>
+                            <h4 id="visibilityVal" class="metric-val">10 km</h4>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <i class="fa-solid fa-sun metric-icon sun-rise"></i>
+                        <div>
+                            <span class="metric-label">Sunrise</span>
+                            <h4 id="sunriseVal" class="metric-val">6:15 AM</h4>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <i class="fa-solid fa-moon metric-icon sun-set"></i>
+                        <div>
+                            <span class="metric-label">Sunset</span>
+                            <h4 id="sunsetVal" class="metric-val">6:45 PM</h4>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5-Day / Upcoming Forecast -->
+            <section class="forecast-section">
+                <h3>Upcoming Forecast</h3>
+                <div id="forecastContainer" class="forecast-grid"></div>
+            </section>
+        </main>
+
+        <!-- Fallback UL container for backward compatibility -->
+        <ul id="weatherInfo" style="display: none;"></ul>
+
+        <!-- App Footer -->
+        <footer class="app-footer">
+            <p>Powered by OpenWeatherMap API • SkyPulse</p>
+        </footer>
+    </div>
+
     <script src="app.js"></script>
 </body>
 </html>
